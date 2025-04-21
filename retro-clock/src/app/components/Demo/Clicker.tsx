@@ -38,6 +38,9 @@ const Clicker: React.FC = () => {
         flexDirection: "column",
         alignItems: "center",
         gap: "15px",
+        border: `2px solid ${currentColor}`,
+        padding: "15px",
+        borderRadius: "15px",
       }}
     >
       <h1

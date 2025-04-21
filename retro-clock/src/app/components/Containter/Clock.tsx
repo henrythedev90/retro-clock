@@ -337,32 +337,53 @@ const Clock: React.FC<ClockProps> = ({
         className={classes.clock_container}
         style={{ border: `2px solid ${currentColor}` }}
       >
-        {/* Hours - always show 2 digits */}
-        <Digit value={hourTens} color={currentColor} />
-        <Digit value={hourOnes} color={currentColor} />
+        {/* Keep all digits in a fixed-width container to prevent layout shifts */}
+        <div
+          className={classes.digits_container}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            width: "100%",
+            position: "relative",
+          }}
+        >
+          {/* Hours - always show 2 digits */}
+          <Digit value={hourTens} color={currentColor} />
+          <Digit value={hourOnes} color={currentColor} />
 
-        <ColonComponent
-          color={currentColor}
-          visible={colonVisible}
-          blinkEnabled={blinkColon}
-        />
+          <ColonComponent
+            color={currentColor}
+            visible={colonVisible}
+            blinkEnabled={blinkColon}
+          />
 
-        {/* Minutes */}
-        <Digit value={minuteTens} color={currentColor} />
-        <Digit value={minuteOnes} color={currentColor} />
+          {/* Minutes */}
+          <Digit value={minuteTens} color={currentColor} />
+          <Digit value={minuteOnes} color={currentColor} />
+        </div>
 
-        {/* AM/PM for 12-hour format */}
-        {timeFormat === "12h" && (
-          <div
-            className={classes.ampm}
-            style={{
-              color: currentColor,
-              textShadow: `0 0 5px ${currentColor}`,
-            }}
-          >
-            {ampm}
-          </div>
-        )}
+        {/* AM/PM for 12-hour format - use absolute positioning to prevent layout shifts */}
+        <div
+          className={classes.ampm_container}
+          style={{
+            position: "absolute",
+            right: "8px",
+            top: "50%",
+            transform: "translateY(-50%)",
+          }}
+        >
+          {timeFormat === "12h" && (
+            <div
+              className={classes.ampm}
+              style={{
+                color: currentColor,
+                textShadow: `0 0 5px ${currentColor}`,
+              }}
+            >
+              {ampm}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Control buttons */}
