@@ -110,6 +110,9 @@ const Clock: React.FC<ClockProps> = ({
       : 0
   );
 
+  // Add loading state for format transitions
+  const [isFormatSwitching, setIsFormatSwitching] = useState(false);
+
   // Dedicated state for clock digits to prevent unnecessary re-renders
   const [hourTens, setHourTens] = useState(0);
   const [hourOnes, setHourOnes] = useState(0);
@@ -311,6 +314,13 @@ const Clock: React.FC<ClockProps> = ({
 
   // Toggle time format function with extra production-safe updates
   const toggleTimeFormat = useCallback(() => {
+    // Don't allow toggling during a format switch
+    if (isFormatSwitching) return;
+
+    // Set loading state
+    setIsFormatSwitching(true);
+
+    // Update the format
     setTimeFormat((prev) => (prev === "24h" ? "12h" : "24h"));
 
     // Force immediate update for the format change
@@ -318,9 +328,16 @@ const Clock: React.FC<ClockProps> = ({
       updateDigitStates();
 
       // Also schedule multiple delayed updates for maximum reliability
-      setTimeout(ensureProperRender, 50);
-    }, 0);
-  }, [ensureProperRender, updateDigitStates]);
+      setTimeout(() => {
+        ensureProperRender();
+
+        // After digits have updated, remove loading state
+        setTimeout(() => {
+          setIsFormatSwitching(false);
+        }, 200);
+      }, 100);
+    }, 50);
+  }, [ensureProperRender, updateDigitStates, isFormatSwitching]);
 
   // Toggle color function with extra production-safe updates
   const toggleColor = useCallback(() => {
@@ -337,7 +354,11 @@ const Clock: React.FC<ClockProps> = ({
       </div>
       <div
         className={classes.clock_container}
-        style={{ border: `2px solid ${currentColor}` }}
+        style={{
+          border: `2px solid ${currentColor}`,
+          opacity: isFormatSwitching ? 0.6 : 1,
+          transition: "opacity 0.2s ease-in-out",
+        }}
       >
         {/* Keep all digits in a fixed-width container to prevent layout shifts */}
         <div
@@ -386,11 +407,46 @@ const Clock: React.FC<ClockProps> = ({
             </div>
           )}
         </div>
+
+        {/* Loading overlay during format switching */}
+        {isFormatSwitching && (
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "rgba(0,0,0,0.2)",
+              borderRadius: "1rem",
+              zIndex: 10,
+            }}
+          >
+            <div
+              style={{
+                width: "30px",
+                height: "30px",
+                borderRadius: "50%",
+                borderTop: `3px solid ${currentColor}`,
+                borderRight: `3px solid transparent`,
+                animation: "spin 0.7s linear infinite",
+              }}
+            />
+          </div>
+        )}
       </div>
 
       {/* Control buttons */}
       <div className={classes.controls}>
-        <ClockButton onClick={toggleTimeFormat} color={currentColor}>
+        <ClockButton
+          onClick={toggleTimeFormat}
+          color={currentColor}
+          disabled={isFormatSwitching}
+          style={{ opacity: isFormatSwitching ? 0.5 : 1 }}
+        >
           {timeFormat === "24h" ? "24H" : "12H"}
         </ClockButton>
 
