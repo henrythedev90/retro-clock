@@ -10,6 +10,8 @@ A Next.js project featuring a customizable retro-style digital clock with 7-segm
 - **Multiple Color Themes** - Toggle between red, green, cyan, amber, and magenta
 - **Time Format Toggle** - Switch between 12-hour and 24-hour time formats
 - **Date Display** - Optional date display in MM/DD/YYYY format
+- **Interactive Elements** - Styled hover effects for links and buttons
+- **Fully Responsive** - Adapts to different screen sizes and devices
 - **Customizable Components** - Reusable components for creating your own digital displays
 
 ## Components
@@ -78,9 +80,20 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 You can customize the clock and digits by modifying the following files:
 
 - `src/app/components/Containter/Clock.tsx` - Main clock component
+- `src/app/components/Containter/style/Clock.module.css` - Styling for clock component
 - `src/app/components/Containter/Digit.tsx` - 7-segment digit component
+- `src/app/components/Containter/style/Digit.module.css` - Styling for digit component
+- `src/app/components/Containter/ClockButton.tsx` - Interactive button component
 - `src/app/components/Hexagon/Hexagon.tsx` - Individual segments
-- `src/app/components/Containter/style/Digit.module.css` - Styling for components
+
+## Styling
+
+This project uses CSS Modules for component-specific styling:
+
+- Each component has its own `.module.css` file for scoped styling
+- The clock components feature glow effects using CSS shadows
+- Interactive elements have hover effects that match the digital retro theme
+- Responsive design is implemented using media queries
 
 ## Technologies
 

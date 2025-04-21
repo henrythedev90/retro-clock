@@ -1,10 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Digit from "./Digit";
-import classes from "./style/Digit.module.css";
+import classes from "./style/Clock.module.css";
 import Hexagon from "../Hexagon/Hexagon";
 import ClockButton from "./ClockButton";
-
+import Link from "next/link";
 // Preset color options
 const colorOptions = [
   "#ff0000", // Red
@@ -116,6 +116,12 @@ const Clock: React.FC<ClockProps> = ({
 
   return (
     <div className={classes.clock_wrapper}>
+      <div className={classes.date_display}>
+        <h1 style={{ color: currentColor }}>digital_retro_clock</h1>
+        <Link href={"https://www.henry-nunez.com"}>
+          <p style={{ color: currentColor }}>Henry_nunez</p>
+        </Link>
+      </div>
       <div className={classes.clock_container}>
         {/* Hours - always show 2 digits */}
         <Digit value={hourTens} color={currentColor} />

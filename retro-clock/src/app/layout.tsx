@@ -1,6 +1,8 @@
 import "@/app/globals.css";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
+import Footer from "./components/Footer";
+import styles from "./page.module.css";
 
 const geistSans = Geist({
   subsets: ["latin"],
@@ -21,7 +23,19 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={geistSans.className}>{children}</body>
+      <head>
+        <link
+          rel="stylesheet"
+          type="text/css"
+          href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css"
+        />
+      </head>
+      <body className={geistSans.className}>
+        <div className={styles.page}>
+          <div className={styles.content_container}>{children}</div>
+          <Footer />
+        </div>
+      </body>
     </html>
   );
 }
