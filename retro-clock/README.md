@@ -2,7 +2,6 @@
 
 A Next.js project featuring a customizable retro-style digital clock with 7-segment display digits inspired by classic LED displays.
 
-![Retro Digital Clock Preview](public/clock-preview.png)
 
 ## Features
 
@@ -90,6 +89,23 @@ This project uses:
 - TypeScript - Type-safe JavaScript
 - CSS Modules - Component styling
 - React Hooks - State management
+
+## Sample
+
+![Screenshot 2025-04-21 at 3 26 27 PM](https://github.com/user-attachments/assets/827486ce-46b9-4fc1-9451-a1e1a69660ca)
+*Clicker
+
+
+![Screenshot 2025-04-21 at 3 26 02 PM](https://github.com/user-attachments/assets/54df727d-6f41-4fe5-9053-dc9028113cc8)
+*Clock Regular
+
+
+![Screenshot 2025-04-21 at 3 25 56 PM](https://github.com/user-attachments/assets/5e86603f-f069-4808-9451-878d0a8c2ba7)
+*Clock Military
+
+
+![Screenshot 2025-04-21 at 3 25 36 PM](https://github.com/user-attachments/assets/f608b475-5170-4d23-a63d-ed77b699778e)
+*Sample of all numbers
 
 ## Learn More
 
