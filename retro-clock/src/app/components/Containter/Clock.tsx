@@ -20,18 +20,6 @@ const colorOptions = [
   "#ff00ff", // Magenta
 ];
 
-// Production rendering safeguard - this will help fix deployed environment issues
-const useProductionSafeEffect = (
-  callback: () => void | (() => void),
-  deps: React.DependencyList
-) => {
-  useEffect(() => {
-    // In production, we add additional stabilization for rendering
-    const timeoutId = setTimeout(callback, 0);
-    return () => clearTimeout(timeoutId);
-  }, deps);
-};
-
 // Define Colon component outside the main component
 const ColonComponent = ({
   color,
