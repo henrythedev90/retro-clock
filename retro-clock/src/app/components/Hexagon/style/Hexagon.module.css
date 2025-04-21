@@ -1,0 +1,48 @@
+.hexagon {
+  width: 100%;
+  height: 100%;
+  background-color: red; /* Default color, will be overridden */
+  position: relative;
+  margin: 0;
+}
+
+.hexagon:before,
+.hexagon:after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+}
+
+.hexagon:before {
+  left: -6px;
+  top: 0;
+  border-right: 6px solid var(--hexagon-color, red);
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+}
+
+.hexagon:after {
+  right: -6px;
+  top: 0;
+  border-left: 6px solid var(--hexagon-color, red);
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+}
+
+.hexagonContainer {
+  display: inline-block;
+  position: relative;
+}
+
+/* Optional on/off states */
+.on {
+  opacity: 1;
+  filter: brightness(1.2) drop-shadow(0 0 3px var(--hexagon-color, red));
+}
+
+.off {
+  opacity: 0;
+}

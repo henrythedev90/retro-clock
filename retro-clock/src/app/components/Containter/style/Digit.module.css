@@ -1,0 +1,86 @@
+.digit_parent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  row-gap: 10px;
+  width: 100%;
+  height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.digit_row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 1200px;
+  padding: 10px;
+}
+
+/* 7-segment digit styling */
+.digit_container {
+  display: grid;
+  grid-template-columns: 13px 48px 13px;
+  grid-template-rows: 20px 45px 20px 45px 20px;
+  grid-template-areas:
+    ".  A  ."
+    "F  .  B"
+    ".  G  ."
+    "E  .  C"
+    ".  D  .";
+  position: relative;
+  width: 74px;
+  height: 150px;
+  background-color: #000;
+  border-radius: 5px;
+  padding: 5px;
+  margin: 4px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.8);
+}
+
+/* Horizontal segments (centered) */
+.segment_a {
+  grid-area: A;
+  justify-self: center;
+  align-self: center;
+}
+
+.segment_g {
+  grid-area: G;
+  justify-self: center;
+  align-self: center;
+}
+
+.segment_d {
+  grid-area: D;
+  justify-self: center;
+  align-self: center;
+}
+
+/* Vertical segments (left and right sides) */
+.segment_f_b,
+.segment_e_c {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.segment_f_b {
+  grid-area: F / 1 / B / 4;
+}
+
+.segment_e_c {
+  grid-area: E / 1 / C / 4;
+}
+
+/* Glow effect for the segments when activated */
+.digit_container [class^="segment_"] div {
+  transition: opacity 0.15s ease;
+}
