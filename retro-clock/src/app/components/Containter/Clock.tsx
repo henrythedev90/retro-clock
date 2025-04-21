@@ -44,7 +44,6 @@ interface ClockProps {
   blinkColon?: boolean;
   showDate?: boolean;
   initialFormat?: "12h" | "24h";
-  updateInterval?: number; // Time update interval in milliseconds
 }
 
 const Clock: React.FC<ClockProps> = ({
@@ -53,7 +52,6 @@ const Clock: React.FC<ClockProps> = ({
   initialDate,
   blinkColon = true,
   initialFormat = "24h",
-  updateInterval = 1000, // Default update interval is 1 second
 }) => {
   // Use refs for intervals to prevent issues with closures and cleanup
   const timeIntervalRef = useRef<NodeJS.Timeout | null>(null);
