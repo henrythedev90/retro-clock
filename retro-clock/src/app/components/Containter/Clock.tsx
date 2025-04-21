@@ -20,6 +20,18 @@ const colorOptions = [
   "#ff00ff", // Magenta
 ];
 
+// Production rendering safeguard - this will help fix deployed environment issues
+const useProductionSafeEffect = (
+  callback: () => void | (() => void),
+  deps: React.DependencyList
+) => {
+  useEffect(() => {
+    // In production, we add additional stabilization for rendering
+    const timeoutId = setTimeout(callback, 0);
+    return () => clearTimeout(timeoutId);
+  }, deps);
+};
+
 // Define Colon component outside the main component
 const ColonComponent = ({
   color,
@@ -56,6 +68,7 @@ const Clock: React.FC<ClockProps> = ({
   // Use refs for intervals to prevent issues with closures and cleanup
   const timeIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const blinkIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const renderCountRef = useRef(0);
 
   // Use a ref to track if component is mounted
   const isMountedRef = useRef(true);
@@ -68,29 +81,63 @@ const Clock: React.FC<ClockProps> = ({
       ? colorOptions.indexOf(initialColor)
       : 0
   );
+  // Force re-renders more aggressively in production with this state
+  const [, setForceRender] = useState(0);
 
   // Current color from the options - stable between renders
   const currentColor = useMemo(() => colorOptions[colorIndex], [colorIndex]);
 
-  // Force time update function
+  // Force time update function - more aggressive for production
   const forceTimeUpdate = useCallback(() => {
     if (isMountedRef.current) {
       const now = new Date();
       setTime(now);
+
+      // Force a re-render separately from the time update
+      // This helps in production environments
+      setForceRender((prev) => prev + 1);
+
+      // Count renders to help with debugging and stabilization
+      renderCountRef.current += 1;
     }
   }, []);
 
+  // Production-safe rendering helper
+  const ensureProperRender = useCallback(() => {
+    // First force an update
+    forceTimeUpdate();
+
+    // Then use a cascading sequence of renders at different timings
+    // This helps in production where rendering might be throttled differently
+    const timings = [0, 16, 32, 64, 100, 200];
+
+    timings.forEach((delay) => {
+      setTimeout(() => {
+        if (isMountedRef.current) {
+          forceTimeUpdate();
+
+          // Use requestAnimationFrame for the optimal timing with the browser's render cycle
+          requestAnimationFrame(() => {
+            if (isMountedRef.current) {
+              forceTimeUpdate();
+            }
+          });
+        }
+      }, delay);
+    });
+  }, [forceTimeUpdate]);
+
   // Setup interval for updating time
   useEffect(() => {
-    // Initial force update
-    forceTimeUpdate();
+    // Initial force update with the production-safe approach
+    ensureProperRender();
 
     // Clear any existing interval
     if (timeIntervalRef.current) {
       clearInterval(timeIntervalRef.current);
     }
 
-    // Ensure time updates every second regardless of updateInterval
+    // Ensure time updates every second regardless of other settings
     // This guarantees we always have accurate time
     timeIntervalRef.current = setInterval(() => {
       forceTimeUpdate();
@@ -102,7 +149,7 @@ const Clock: React.FC<ClockProps> = ({
         timeIntervalRef.current = null;
       }
     };
-  }, [forceTimeUpdate]);
+  }, [forceTimeUpdate, ensureProperRender]);
 
   // Component mount/unmount effect
   useEffect(() => {
@@ -110,7 +157,7 @@ const Clock: React.FC<ClockProps> = ({
 
     // Request animation frame to ensure time is updated in sync with browser
     const animationFrameId = requestAnimationFrame(() => {
-      forceTimeUpdate();
+      ensureProperRender();
     });
 
     return () => {
@@ -128,7 +175,13 @@ const Clock: React.FC<ClockProps> = ({
         blinkIntervalRef.current = null;
       }
     };
-  }, [forceTimeUpdate]);
+  }, [ensureProperRender]);
+
+  // Use a more aggressive synchronization approach for production
+  useProductionSafeEffect(() => {
+    // Force updates on a regular schedule to prevent drift
+    ensureProperRender();
+  }, [time]);
 
   // Separate effect for colon blinking
   useEffect(() => {
@@ -146,6 +199,14 @@ const Clock: React.FC<ClockProps> = ({
     blinkIntervalRef.current = setInterval(() => {
       if (isMountedRef.current) {
         setColonVisible((prev) => !prev);
+
+        // Whenever colon visibility changes, ensure digits are properly updated too
+        // This helps fix production environment issues
+        requestAnimationFrame(() => {
+          if (isMountedRef.current) {
+            setForceRender((prev) => prev + 1);
+          }
+        });
       }
     }, 1000);
 
@@ -157,27 +218,21 @@ const Clock: React.FC<ClockProps> = ({
     };
   }, [blinkColon]);
 
-  // Debounce mechanism for hexagon filling
+  // Debounce mechanism for hexagon filling - improved for production
   const debounceTimeUpdate = useCallback(() => {
-    // Force immediate time update then schedule next one
-    forceTimeUpdate();
-
-    // Request animation frame to sync with browser rendering
-    requestAnimationFrame(() => {
-      if (isMountedRef.current) {
-        forceTimeUpdate();
-      }
-    });
-  }, [forceTimeUpdate]);
+    // Force immediate time update then schedule a series of updates
+    ensureProperRender();
+  }, [ensureProperRender]);
 
   // Set up an effect to ensure time stays synced with system clock
   useEffect(() => {
-    // Sync time immediately and then every 30 seconds to avoid drift
+    // Sync time immediately and then every 10 seconds to avoid drift
+    // More frequent in production to handle potential issues
     const syncInterval = setInterval(() => {
       debounceTimeUpdate();
-    }, 30000);
+    }, 10000);
 
-    // Also sync when the document gains focus
+    // Also sync when the document gains focus or visibility changes
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
         debounceTimeUpdate();
@@ -188,14 +243,27 @@ const Clock: React.FC<ClockProps> = ({
       debounceTimeUpdate();
     };
 
+    // Additional events for mobile browsers
+    const handleOnline = () => {
+      debounceTimeUpdate();
+    };
+
+    const handleResize = () => {
+      debounceTimeUpdate();
+    };
+
     // Add event listeners to keep clock in sync when user returns to tab
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("focus", handleFocus);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("resize", handleResize);
 
     return () => {
       clearInterval(syncInterval);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-      window.addEventListener("focus", handleFocus);
+      window.removeEventListener("focus", handleFocus);
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("resize", handleResize);
     };
   }, [debounceTimeUpdate]);
 
@@ -238,17 +306,21 @@ const Clock: React.FC<ClockProps> = ({
     };
   }, [time, timeFormat]);
 
-  // Toggle time format function - use useCallback to prevent unnecessary re-renders
+  // Toggle time format function with extra production-safe updates
   const toggleTimeFormat = useCallback(() => {
     setTimeFormat((prev) => (prev === "24h" ? "12h" : "24h"));
-    // Force an update right after format change
-    setTimeout(forceTimeUpdate, 0);
-  }, [forceTimeUpdate]);
 
-  // Toggle color function - use useCallback to prevent unnecessary re-renders
+    // Use the production-safe approach for toggling
+    ensureProperRender();
+  }, [ensureProperRender]);
+
+  // Toggle color function with extra production-safe updates
   const toggleColor = useCallback(() => {
     setColorIndex((prevIndex) => (prevIndex + 1) % colorOptions.length);
-  }, []);
+
+    // Use the production-safe approach for toggling
+    ensureProperRender();
+  }, [ensureProperRender]);
 
   const { hourTens, hourOnes, minuteTens, minuteOnes, ampm, formattedDate } =
     timeComponents;
