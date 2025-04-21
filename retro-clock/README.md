@@ -1,4 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Retro Digital Clock
+
+A Next.js project featuring a customizable retro-style digital clock with 7-segment display digits inspired by classic LED displays.
+
+![Retro Digital Clock Preview](public/clock-preview.png)
+
+## Features
+
+- **7-Segment Display** - Authentic retro digital display
+- **Multiple Color Themes** - Toggle between red, green, cyan, amber, and magenta
+- **Time Format Toggle** - Switch between 12-hour and 24-hour time formats
+- **Date Display** - Optional date display in MM/DD/YYYY format
+- **Customizable Components** - Reusable components for creating your own digital displays
+
+## Components
+
+### Digit Component
+
+The `Digit` component renders a single 7-segment display digit (0-9):
+
+```jsx
+<Digit value={8} color="#ff0000" />
+```
+
+### Clock Component
+
+The `Clock` component shows the current time with configurable options:
+
+```jsx
+<Clock
+  initialColor="#ff0000"
+  showSeconds={true}
+  showDate={true}
+  initialFormat="24h"
+/>
+```
+
+### ClockButton Component
+
+Reusable button component with retro styling that matches the clock:
+
+```jsx
+<ClockButton
+  color="#ff0000"
+  onClick={handleClick}
+  variant="default" // or "small" or "large"
+>
+  Button Text
+</ClockButton>
+```
+
+### Clicker Demo
+
+A simple counter example using the digit and button components:
+
+```jsx
+<Clicker />
+```
 
 ## Getting Started
 
@@ -14,23 +71,35 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the clock in action.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Customization
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+You can customize the clock and digits by modifying the following files:
+
+- `src/app/components/Containter/Clock.tsx` - Main clock component
+- `src/app/components/Containter/Digit.tsx` - 7-segment digit component
+- `src/app/components/Hexagon/Hexagon.tsx` - Individual segments
+- `src/app/components/Containter/style/Digit.module.css` - Styling for components
+
+## Technologies
+
+This project uses:
+
+- [Next.js](https://nextjs.org) - React framework
+- TypeScript - Type-safe JavaScript
+- CSS Modules - Component styling
+- React Hooks - State management
 
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Learn Next.js](https://nextjs.org/learn)
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The easiest way to deploy your clock app is to use the [Vercel Platform](https://vercel.com/new) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
