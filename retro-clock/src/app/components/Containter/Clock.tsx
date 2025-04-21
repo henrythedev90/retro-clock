@@ -43,7 +43,6 @@ interface ClockProps {
 
 const Clock: React.FC<ClockProps> = ({
   initialColor = "#ff0000",
-  showSeconds = false,
   showDate = false,
   initialDate,
   blinkColon = true,
@@ -92,7 +91,6 @@ const Clock: React.FC<ClockProps> = ({
   const timeComponents = useMemo(() => {
     let hours = time.getHours();
     const minutes = time.getMinutes();
-    const seconds = time.getSeconds();
 
     // AM/PM indicator for 12-hour format
     let ampm = "";
@@ -107,8 +105,6 @@ const Clock: React.FC<ClockProps> = ({
     const hourOnes = hours % 10;
     const minuteTens = Math.floor(minutes / 10);
     const minuteOnes = minutes % 10;
-    const secondTens = Math.floor(seconds / 10);
-    const secondOnes = seconds % 10;
 
     // Get date components
     const day = time.getDate();
@@ -125,8 +121,6 @@ const Clock: React.FC<ClockProps> = ({
       hourOnes,
       minuteTens,
       minuteOnes,
-      secondTens,
-      secondOnes,
       ampm,
       formattedDate,
     };
@@ -142,16 +136,8 @@ const Clock: React.FC<ClockProps> = ({
     setColorIndex((prevIndex) => (prevIndex + 1) % colorOptions.length);
   }, []);
 
-  const {
-    hourTens,
-    hourOnes,
-    minuteTens,
-    minuteOnes,
-    secondTens,
-    secondOnes,
-    ampm,
-    formattedDate,
-  } = timeComponents;
+  const { hourTens, hourOnes, minuteTens, minuteOnes, ampm, formattedDate } =
+    timeComponents;
 
   return (
     <div className={classes.clock_wrapper}>
@@ -161,7 +147,10 @@ const Clock: React.FC<ClockProps> = ({
           <p style={{ color: currentColor }}>Henry_nunez</p>
         </Link>
       </div>
-      <div className={classes.clock_container}>
+      <div
+        className={classes.clock_container}
+        style={{ border: `2px solid ${currentColor}` }}
+      >
         {/* Hours - always show 2 digits */}
         <Digit value={hourTens} color={currentColor} />
         <Digit value={hourOnes} color={currentColor} />
@@ -175,19 +164,6 @@ const Clock: React.FC<ClockProps> = ({
         {/* Minutes */}
         <Digit value={minuteTens} color={currentColor} />
         <Digit value={minuteOnes} color={currentColor} />
-
-        {/* Seconds (optional) */}
-        {showSeconds && (
-          <>
-            <ColonComponent
-              color={currentColor}
-              visible={colonVisible}
-              blinkEnabled={blinkColon}
-            />
-            <Digit value={secondTens} color={currentColor} />
-            <Digit value={secondOnes} color={currentColor} />
-          </>
-        )}
 
         {/* AM/PM for 12-hour format */}
         {timeFormat === "12h" && (
