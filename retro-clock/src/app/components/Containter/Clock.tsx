@@ -14,6 +14,23 @@ const colorOptions = [
   "#ff00ff", // Magenta
 ];
 
+// Define Colon component outside the main component
+const ColonComponent = ({
+  color,
+  visible,
+  blinkEnabled,
+}: {
+  color: string;
+  visible: boolean;
+  blinkEnabled: boolean;
+}) => (
+  <div className={classes.colon}>
+    <Hexagon color={color} on={visible || !blinkEnabled} height={8} width={8} />
+    <Hexagon color={color} on={visible || !blinkEnabled} height={8} width={8} />
+  </div>
+);
+ColonComponent.displayName = "Colon";
+
 interface ClockProps {
   initialColor?: string;
   showSeconds?: boolean;
@@ -119,28 +136,6 @@ const Clock: React.FC<ClockProps> = ({
     setColorIndex((prevIndex) => (prevIndex + 1) % colorOptions.length);
   }, []);
 
-  // Memoized colon component
-  const Colon = useMemo(() => {
-    const ColonComponent = () => (
-      <div className={classes.colon}>
-        <Hexagon
-          color={currentColor}
-          on={colonVisible || !blinkColon}
-          height={8}
-          width={8}
-        />
-        <Hexagon
-          color={currentColor}
-          on={colonVisible || !blinkColon}
-          height={8}
-          width={8}
-        />
-      </div>
-    );
-    ColonComponent.displayName = "Colon";
-    return ColonComponent;
-  }, [currentColor, colonVisible, blinkColon]);
-
   const {
     hourTens,
     hourOnes,
@@ -165,7 +160,11 @@ const Clock: React.FC<ClockProps> = ({
         <Digit value={hourTens} color={currentColor} />
         <Digit value={hourOnes} color={currentColor} />
 
-        <Colon />
+        <ColonComponent
+          color={currentColor}
+          visible={colonVisible}
+          blinkEnabled={blinkColon}
+        />
 
         {/* Minutes */}
         <Digit value={minuteTens} color={currentColor} />
@@ -174,7 +173,11 @@ const Clock: React.FC<ClockProps> = ({
         {/* Seconds (optional) */}
         {showSeconds && (
           <>
-            <Colon />
+            <ColonComponent
+              color={currentColor}
+              visible={colonVisible}
+              blinkEnabled={blinkColon}
+            />
             <Digit value={secondTens} color={currentColor} />
             <Digit value={secondOnes} color={currentColor} />
           </>
