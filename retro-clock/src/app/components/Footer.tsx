@@ -11,12 +11,12 @@ const CONTACT_LINKS = [
     devicon: "devicon-github-original",
   },
   {
-    href: "https://linkedin.com/in/yourusername",
+    href: "https://www.linkedin.com/in/henrysaulnunez/",
     label: "LinkedIn",
     devicon: "devicon-linkedin-plain",
   },
   {
-    href: "https://yourwebsite.com",
+    href: "https://henry-nunez.com/",
     label: "Website",
     devicon: "",
   },
