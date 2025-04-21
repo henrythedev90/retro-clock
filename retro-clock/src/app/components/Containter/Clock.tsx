@@ -121,7 +121,7 @@ const Clock: React.FC<ClockProps> = ({
 
   // Memoized colon component
   const Colon = useMemo(() => {
-    return () => (
+    const ColonComponent = () => (
       <div className={classes.colon}>
         <Hexagon
           color={currentColor}
@@ -137,6 +137,8 @@ const Clock: React.FC<ClockProps> = ({
         />
       </div>
     );
+    ColonComponent.displayName = "Colon";
+    return ColonComponent;
   }, [currentColor, colonVisible, blinkColon]);
 
   const {
