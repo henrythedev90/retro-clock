@@ -38,15 +38,17 @@ interface ClockProps {
   blinkColon?: boolean;
   showDate?: boolean;
   initialFormat?: "12h" | "24h";
+  updateInterval?: number; // Time update interval in milliseconds
 }
 
 const Clock: React.FC<ClockProps> = ({
   initialColor = "#ff0000",
-  showSeconds = true,
+  showSeconds = false,
   showDate = false,
   initialDate,
   blinkColon = true,
   initialFormat = "24h",
+  updateInterval = 1000, // Default update interval is 1 second
 }) => {
   const [time, setTime] = useState<Date>(initialDate || new Date());
   const [colonVisible, setColonVisible] = useState(true);
@@ -61,26 +63,30 @@ const Clock: React.FC<ClockProps> = ({
   const currentColor = useMemo(() => colorOptions[colorIndex], [colorIndex]);
 
   useEffect(() => {
-    // Separate time update from colon blinking for better performance
+    // Update time based on the provided interval
     const timeInterval = setInterval(() => {
       // Use functional update to ensure we're working with the latest state
       setTime(new Date());
-    }, 1000);
+    }, updateInterval);
 
     // Return cleanup function
     return () => clearInterval(timeInterval);
-  }, []); // No dependencies needed for the time update
+  }, [updateInterval]); // Add updateInterval as a dependency
 
   // Separate effect for colon blinking
   useEffect(() => {
     if (!blinkColon) return;
 
+    // Blink colon at the same rate as time updates for consistency
+    // or at least every second if time updates less frequently
+    const blinkRate = Math.min(updateInterval, 1000);
+
     const blinkInterval = setInterval(() => {
       setColonVisible((prev) => !prev);
-    }, 1000);
+    }, blinkRate);
 
     return () => clearInterval(blinkInterval);
-  }, [blinkColon]);
+  }, [blinkColon, updateInterval]);
 
   // Extract time components using memoization to reduce recalculations
   const timeComponents = useMemo(() => {
