@@ -250,7 +250,7 @@ const Clock: React.FC<ClockProps> = ({
         blinkIntervalRef.current = null;
       }
     };
-  }, [blinkColon]);
+  }, [blinkColon, timeFormat]);
 
   // Set up an effect to ensure time stays synced with system clock
   useEffect(() => {
@@ -315,6 +315,9 @@ const Clock: React.FC<ClockProps> = ({
 
     // Update the format
     setTimeFormat((prev) => (prev === "24h" ? "12h" : "24h"));
+
+    // Reset colon state to ensure blinking resumes properly
+    setColonVisible(true);
 
     // Force immediate update for the format change
     setTimeout(() => {
