@@ -2,8 +2,6 @@
 
 A Next.js project featuring a customizable retro-style digital clock with 7-segment display digits inspired by classic LED displays.
 
-![Retro Digital Clock Preview](public/clock-preview.png)
-
 ## Features
 
 - **7-Segment Display** - Authentic retro digital display
@@ -103,6 +101,28 @@ This project uses:
 - TypeScript - Type-safe JavaScript
 - CSS Modules - Component styling
 - React Hooks - State management
+
+## Screenshots
+
+### Interactive Clicker Component
+
+![Interactive Clicker Component](https://github.com/user-attachments/assets/827486ce-46b9-4fc1-9451-a1e1a69660ca)
+_A simple counter implementation using the digit and button components_
+
+### Standard Clock (12-hour format)
+
+![Standard Clock with 12-hour format](https://github.com/user-attachments/assets/54df727d-6f41-4fe5-9053-dc9028113cc8)
+_The clock component showing time in 12-hour format with AM/PM indicator_
+
+### Military Clock (24-hour format)
+
+![Military Clock with 24-hour format](https://github.com/user-attachments/assets/5e86603f-f069-4808-9451-878d0a8c2ba7)
+_The clock component showing time in 24-hour format_
+
+### Digit Display Sample
+
+![Sample of all digits 0-9](https://github.com/user-attachments/assets/f608b475-5170-4d23-a63d-ed77b699778e)
+_Complete showcase of all possible digit states (0-9) in the 7-segment display_
 
 ## Learn More
 
