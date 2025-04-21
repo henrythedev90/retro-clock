@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Digit from "./Digit";
 import classes from "./style/Clock.module.css";
 import Hexagon from "../Hexagon/Hexagon";
@@ -41,78 +41,114 @@ const Clock: React.FC<ClockProps> = ({
   );
 
   // Current color from the options
-  const currentColor = colorOptions[colorIndex];
+  const currentColor = useMemo(() => colorOptions[colorIndex], [colorIndex]);
 
   useEffect(() => {
-    // Update time every second
-    const interval = setInterval(() => {
+    // Separate time update from colon blinking for better performance
+    const timeInterval = setInterval(() => {
+      // Use functional update to ensure we're working with the latest state
       setTime(new Date());
-      if (blinkColon) {
-        setColonVisible((prev) => !prev);
-      }
     }, 1000);
 
-    return () => clearInterval(interval);
+    // Return cleanup function
+    return () => clearInterval(timeInterval);
+  }, []); // No dependencies needed for the time update
+
+  // Separate effect for colon blinking
+  useEffect(() => {
+    if (!blinkColon) return;
+
+    const blinkInterval = setInterval(() => {
+      setColonVisible((prev) => !prev);
+    }, 1000);
+
+    return () => clearInterval(blinkInterval);
   }, [blinkColon]);
 
-  // Extract hours, minutes, seconds
-  let hours = time.getHours();
-  const minutes = time.getMinutes();
-  const seconds = time.getSeconds();
+  // Extract time components using memoization to reduce recalculations
+  const timeComponents = useMemo(() => {
+    let hours = time.getHours();
+    const minutes = time.getMinutes();
+    const seconds = time.getSeconds();
 
-  // AM/PM indicator for 12-hour format
-  let ampm = "";
-  if (timeFormat === "12h") {
-    ampm = hours >= 12 ? "PM" : "AM";
-    hours = hours % 12;
-    hours = hours === 0 ? 12 : hours; // Convert 0 to 12 for 12 AM
-  }
+    // AM/PM indicator for 12-hour format
+    let ampm = "";
+    if (timeFormat === "12h") {
+      ampm = hours >= 12 ? "PM" : "AM";
+      hours = hours % 12;
+      hours = hours === 0 ? 12 : hours; // Convert 0 to 12 for 12 AM
+    }
 
-  // Format as digits - ensure hours are always 2 digits
-  const hourTens = Math.floor(hours / 10);
-  const hourOnes = hours % 10;
-  const minuteTens = Math.floor(minutes / 10);
-  const minuteOnes = minutes % 10;
-  const secondTens = Math.floor(seconds / 10);
-  const secondOnes = seconds % 10;
+    // Format as digits
+    const hourTens = Math.floor(hours / 10);
+    const hourOnes = hours % 10;
+    const minuteTens = Math.floor(minutes / 10);
+    const minuteOnes = minutes % 10;
+    const secondTens = Math.floor(seconds / 10);
+    const secondOnes = seconds % 10;
 
-  // Get date components
-  const day = time.getDate();
-  const month = time.getMonth() + 1; // Months are 0-indexed
-  const year = time.getFullYear();
+    // Get date components
+    const day = time.getDate();
+    const month = time.getMonth() + 1; // Months are 0-indexed
+    const year = time.getFullYear();
 
-  // Colon component for separating hours, minutes, seconds
-  const Colon = () => (
-    <div className={classes.colon}>
-      <Hexagon
-        color={currentColor}
-        on={colonVisible || !blinkColon}
-        height={8}
-        width={8}
-      />
-      <Hexagon
-        color={currentColor}
-        on={colonVisible || !blinkColon}
-        height={8}
-        width={8}
-      />
-    </div>
-  );
+    // Format date display based on locale (MM/DD/YYYY for US)
+    const formattedDate = `${month.toString().padStart(2, "0")}/${day
+      .toString()
+      .padStart(2, "0")}/${year}`;
 
-  // Format date display based on locale (MM/DD/YYYY for US)
-  const formattedDate = `${month.toString().padStart(2, "0")}/${day
-    .toString()
-    .padStart(2, "0")}/${year}`;
+    return {
+      hourTens,
+      hourOnes,
+      minuteTens,
+      minuteOnes,
+      secondTens,
+      secondOnes,
+      ampm,
+      formattedDate,
+    };
+  }, [time, timeFormat]);
 
-  // Toggle time format function
-  const toggleTimeFormat = () => {
+  // Toggle time format function - use useCallback to prevent unnecessary re-renders
+  const toggleTimeFormat = useCallback(() => {
     setTimeFormat((prev) => (prev === "24h" ? "12h" : "24h"));
-  };
+  }, []);
 
-  // Toggle color function
-  const toggleColor = () => {
+  // Toggle color function - use useCallback to prevent unnecessary re-renders
+  const toggleColor = useCallback(() => {
     setColorIndex((prevIndex) => (prevIndex + 1) % colorOptions.length);
-  };
+  }, []);
+
+  // Memoized colon component
+  const Colon = useMemo(() => {
+    return () => (
+      <div className={classes.colon}>
+        <Hexagon
+          color={currentColor}
+          on={colonVisible || !blinkColon}
+          height={8}
+          width={8}
+        />
+        <Hexagon
+          color={currentColor}
+          on={colonVisible || !blinkColon}
+          height={8}
+          width={8}
+        />
+      </div>
+    );
+  }, [currentColor, colonVisible, blinkColon]);
+
+  const {
+    hourTens,
+    hourOnes,
+    minuteTens,
+    minuteOnes,
+    secondTens,
+    secondOnes,
+    ampm,
+    formattedDate,
+  } = timeComponents;
 
   return (
     <div className={classes.clock_wrapper}>
