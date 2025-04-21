@@ -43,6 +43,18 @@
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.8);
 }
 
+/* Responsive digit container for smaller screens */
+@media (max-width: 480px) {
+  .digit_container {
+    grid-template-columns: 8px 32px 8px;
+    grid-template-rows: 15px 32px 15px 32px 15px;
+    width: 48px;
+    height: 109px;
+    padding: 3px;
+    margin: 2px;
+  }
+}
+
 /* Horizontal segments (centered) */
 .segment_a {
   grid-area: A;
@@ -96,6 +108,24 @@
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  width: 100%;
+  max-width: 650px;
+}
+
+/* Responsive clock wrapper */
+@media (max-width: 600px) {
+  .clock_wrapper {
+    padding: 15px 10px;
+    gap: 10px;
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .clock_wrapper {
+    padding: 10px 5px;
+    gap: 8px;
+  }
 }
 
 .clock_container {
@@ -107,11 +137,27 @@
   flex-wrap: wrap;
 }
 
+/* Responsive clock container */
+@media (max-width: 480px) {
+  .clock_container {
+    gap: 3px;
+  }
+}
+
 /* Control buttons container */
 .controls {
   display: flex;
   gap: 10px;
   margin-top: 5px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Responsive controls for smaller screens */
+@media (max-width: 480px) {
+  .controls {
+    gap: 6px;
+  }
 }
 
 /* Colon separator */
@@ -123,6 +169,14 @@
   justify-content: center;
   align-items: center;
   height: 150px;
+}
+
+/* Responsive colon for smaller screens */
+@media (max-width: 480px) {
+  .colon {
+    gap: 10px;
+    height: 109px;
+  }
 }
 
 /* AM/PM indicator */
@@ -137,6 +191,15 @@
   align-items: center;
 }
 
+/* Responsive AM/PM for smaller screens */
+@media (max-width: 480px) {
+  .ampm {
+    font-size: 18px;
+    margin-left: 5px;
+    height: 109px;
+  }
+}
+
 /* Date display */
 .date_display {
   color: #ff0000;
@@ -146,6 +209,14 @@
   text-shadow: 0 0 5px #ff0000;
   width: 100%;
   text-align: center;
+}
+
+/* Responsive date display for smaller screens */
+@media (max-width: 480px) {
+  .date_display {
+    font-size: 16px;
+    margin-top: 5px;
+  }
 }
 
 /* Reusable Clock Button */
@@ -165,6 +236,14 @@
 .clock_button:hover {
   background-color: #500;
   box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+/* Responsive buttons for smaller screens */
+@media (max-width: 480px) {
+  .clock_button {
+    padding: 4px 10px;
+    font-size: 12px;
+  }
 }
 
 /* Disabled button state */
@@ -191,6 +270,19 @@
   padding: 8px 20px;
   font-size: 16px;
   font-weight: bold;
+}
+
+/* Responsive button variants */
+@media (max-width: 480px) {
+  .button_small {
+    padding: 2px 8px;
+    font-size: 10px;
+  }
+
+  .button_large {
+    padding: 6px 15px;
+    font-size: 14px;
+  }
 }
 
 /* Legacy button styles (for backward compatibility) */
