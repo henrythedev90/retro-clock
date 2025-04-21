@@ -1,5 +1,11 @@
 "use client";
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
 import Digit from "./Digit";
 import classes from "./style/Clock.module.css";
 import Hexagon from "../Hexagon/Hexagon";
@@ -49,6 +55,13 @@ const Clock: React.FC<ClockProps> = ({
   initialFormat = "24h",
   updateInterval = 1000, // Default update interval is 1 second
 }) => {
+  // Use refs for intervals to prevent issues with closures and cleanup
+  const timeIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const blinkIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Use a ref to track if component is mounted
+  const isMountedRef = useRef(true);
+
   const [time, setTime] = useState<Date>(initialDate || new Date());
   const [colonVisible, setColonVisible] = useState(true);
   const [timeFormat, setTimeFormat] = useState<"12h" | "24h">(initialFormat);
@@ -58,34 +71,135 @@ const Clock: React.FC<ClockProps> = ({
       : 0
   );
 
-  // Current color from the options
+  // Current color from the options - stable between renders
   const currentColor = useMemo(() => colorOptions[colorIndex], [colorIndex]);
 
-  useEffect(() => {
-    // Update time based on the provided interval
-    const timeInterval = setInterval(() => {
-      // Use functional update to ensure we're working with the latest state
-      setTime(new Date());
-    }, updateInterval);
+  // Force time update function
+  const forceTimeUpdate = useCallback(() => {
+    if (isMountedRef.current) {
+      const now = new Date();
+      setTime(now);
+    }
+  }, []);
 
-    // Return cleanup function
-    return () => clearInterval(timeInterval);
-  }, [updateInterval]); // Add updateInterval as a dependency
+  // Setup interval for updating time
+  useEffect(() => {
+    // Initial force update
+    forceTimeUpdate();
+
+    // Clear any existing interval
+    if (timeIntervalRef.current) {
+      clearInterval(timeIntervalRef.current);
+    }
+
+    // Ensure time updates every second regardless of updateInterval
+    // This guarantees we always have accurate time
+    timeIntervalRef.current = setInterval(() => {
+      forceTimeUpdate();
+    }, 1000);
+
+    return () => {
+      if (timeIntervalRef.current) {
+        clearInterval(timeIntervalRef.current);
+        timeIntervalRef.current = null;
+      }
+    };
+  }, [forceTimeUpdate]);
+
+  // Component mount/unmount effect
+  useEffect(() => {
+    isMountedRef.current = true;
+
+    // Request animation frame to ensure time is updated in sync with browser
+    const animationFrameId = requestAnimationFrame(() => {
+      forceTimeUpdate();
+    });
+
+    return () => {
+      isMountedRef.current = false;
+      cancelAnimationFrame(animationFrameId);
+
+      // Clear all intervals on unmount
+      if (timeIntervalRef.current) {
+        clearInterval(timeIntervalRef.current);
+        timeIntervalRef.current = null;
+      }
+
+      if (blinkIntervalRef.current) {
+        clearInterval(blinkIntervalRef.current);
+        blinkIntervalRef.current = null;
+      }
+    };
+  }, [forceTimeUpdate]);
 
   // Separate effect for colon blinking
   useEffect(() => {
-    if (!blinkColon) return;
+    if (!blinkColon) {
+      setColonVisible(true); // Always visible if blinking is disabled
+      return;
+    }
 
-    // Blink colon at the same rate as time updates for consistency
-    // or at least every second if time updates less frequently
-    const blinkRate = Math.min(updateInterval, 1000);
+    // Clear any existing interval
+    if (blinkIntervalRef.current) {
+      clearInterval(blinkIntervalRef.current);
+    }
 
-    const blinkInterval = setInterval(() => {
-      setColonVisible((prev) => !prev);
-    }, blinkRate);
+    // Blink colon every second for consistency
+    blinkIntervalRef.current = setInterval(() => {
+      if (isMountedRef.current) {
+        setColonVisible((prev) => !prev);
+      }
+    }, 1000);
 
-    return () => clearInterval(blinkInterval);
-  }, [blinkColon, updateInterval]);
+    return () => {
+      if (blinkIntervalRef.current) {
+        clearInterval(blinkIntervalRef.current);
+        blinkIntervalRef.current = null;
+      }
+    };
+  }, [blinkColon]);
+
+  // Debounce mechanism for hexagon filling
+  const debounceTimeUpdate = useCallback(() => {
+    // Force immediate time update then schedule next one
+    forceTimeUpdate();
+
+    // Request animation frame to sync with browser rendering
+    requestAnimationFrame(() => {
+      if (isMountedRef.current) {
+        forceTimeUpdate();
+      }
+    });
+  }, [forceTimeUpdate]);
+
+  // Set up an effect to ensure time stays synced with system clock
+  useEffect(() => {
+    // Sync time immediately and then every 30 seconds to avoid drift
+    const syncInterval = setInterval(() => {
+      debounceTimeUpdate();
+    }, 30000);
+
+    // Also sync when the document gains focus
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        debounceTimeUpdate();
+      }
+    };
+
+    const handleFocus = () => {
+      debounceTimeUpdate();
+    };
+
+    // Add event listeners to keep clock in sync when user returns to tab
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      clearInterval(syncInterval);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.addEventListener("focus", handleFocus);
+    };
+  }, [debounceTimeUpdate]);
 
   // Extract time components using memoization to reduce recalculations
   const timeComponents = useMemo(() => {
@@ -129,7 +243,9 @@ const Clock: React.FC<ClockProps> = ({
   // Toggle time format function - use useCallback to prevent unnecessary re-renders
   const toggleTimeFormat = useCallback(() => {
     setTimeFormat((prev) => (prev === "24h" ? "12h" : "24h"));
-  }, []);
+    // Force an update right after format change
+    setTimeout(forceTimeUpdate, 0);
+  }, [forceTimeUpdate]);
 
   // Toggle color function - use useCallback to prevent unnecessary re-renders
   const toggleColor = useCallback(() => {
