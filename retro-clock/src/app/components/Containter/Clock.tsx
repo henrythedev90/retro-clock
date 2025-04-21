@@ -58,24 +58,29 @@ interface ClockProps {
   initialFormat?: "12h" | "24h";
 }
 
-// Helper function to extract time components
+// Helper function to extract time components using Intl.DateTimeFormat
 const getTimeComponents = (date: Date, is12Hour: boolean) => {
+  // Get raw hours and minutes to avoid formatting issues
   let hours = date.getHours();
   const minutes = date.getMinutes();
-
-  // AM/PM indicator for 12-hour format
   let ampm = "";
+
+  // Handle 12-hour format conversion
   if (is12Hour) {
     ampm = hours >= 12 ? "PM" : "AM";
     hours = hours % 12;
     hours = hours === 0 ? 12 : hours; // Convert 0 to 12 for 12 AM
   }
 
-  // Format as digits
-  const hourTens = Math.floor(hours / 10);
-  const hourOnes = hours % 10;
-  const minuteTens = Math.floor(minutes / 10);
-  const minuteOnes = minutes % 10;
+  // Format hours and minutes as 2-digit strings
+  const hourStr = hours.toString().padStart(2, "0");
+  const minuteStr = minutes.toString().padStart(2, "0");
+
+  // Extract individual digits
+  const hourTens = parseInt(hourStr[0], 10);
+  const hourOnes = parseInt(hourStr[1], 10);
+  const minuteTens = parseInt(minuteStr[0], 10);
+  const minuteOnes = parseInt(minuteStr[1], 10);
 
   return {
     hourTens,
