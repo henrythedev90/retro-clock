@@ -58,9 +58,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-wrap: nowrap; /* Prevent wrapping which could cause layout shifts */
+  flex-wrap: wrap; /* Prevent wrapping which could cause layout shifts */
   width: 100%;
   position: relative;
+  padding: 3rem;
 }
 
 .ampm_container {

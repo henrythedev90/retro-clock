@@ -11,6 +11,7 @@ import classes from "./style/Clock.module.css";
 import Hexagon from "../Hexagon/Hexagon";
 import ClockButton from "./ClockButton";
 import Link from "next/link";
+import Calender from "./Calender";
 // Preset color options
 const colorOptions = [
   "#ff0000", // Red
@@ -435,6 +436,20 @@ const Clock: React.FC<ClockProps> = ({
         )}
       </div>
 
+      {/* Date display (optional) */}
+      {showDate && (
+        <div
+          className={classes.date_display}
+          style={{ color: currentColor, textShadow: `0 0 5px ${currentColor}` }}
+        >
+          {formattedDate}
+          <Calender
+            date={new Date(formattedDate)}
+            initialColor={currentColor}
+          />
+        </div>
+      )}
+
       {/* Control buttons */}
       <div className={classes.controls}>
         <ClockButton
@@ -450,16 +465,6 @@ const Clock: React.FC<ClockProps> = ({
           COLOR
         </ClockButton>
       </div>
-
-      {/* Date display (optional) */}
-      {showDate && (
-        <div
-          className={classes.date_display}
-          style={{ color: currentColor, textShadow: `0 0 5px ${currentColor}` }}
-        >
-          {formattedDate}
-        </div>
-      )}
     </div>
   );
 };
