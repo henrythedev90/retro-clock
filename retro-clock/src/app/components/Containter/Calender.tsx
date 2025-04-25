@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import Digit from "../Containter/Digit";
 import classes from "./style/Calender.module.css";
-import ClockButton from "./ClockButton";
 
 interface CalenderProps {
   date: Date;
