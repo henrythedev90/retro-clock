@@ -8,6 +8,9 @@ A Next.js project featuring a customizable retro-style digital clock with 7-segm
 - **Multiple Color Themes** - Toggle between red, green, cyan, amber, and magenta
 - **Time Format Toggle** - Switch between 12-hour and 24-hour time formats
 - **Date Display** - Optional date display in MM/DD/YYYY format
+- **Calendar Component** - Visual month calendar with current date highlighted
+- **Synchronized Time** - Keeps perfect time with visibility and focus handling
+- **Colon Blinking** - Optional blinking colon for a truly authentic retro feel
 - **Interactive Elements** - Styled hover effects for links and buttons
 - **Fully Responsive** - Adapts to different screen sizes and devices
 - **Customizable Components** - Reusable components for creating your own digital displays
@@ -32,6 +35,7 @@ The `Clock` component shows the current time with configurable options:
   showSeconds={true}
   showDate={true}
   initialFormat="24h"
+  blinkColon={true}
 />
 ```
 
@@ -47,6 +51,22 @@ Reusable button component with retro styling that matches the clock:
 >
   Button Text
 </ClockButton>
+```
+
+### Calendar Component
+
+Display a month calendar with the current date highlighted:
+
+```jsx
+<Calender date={new Date()} initialColor="#ff0000" />
+```
+
+### Hexagon Component
+
+Individual segments used to build the 7-segment display:
+
+```jsx
+<Hexagon color="#ff0000" on={true} height={8} width={8} />
 ```
 
 ### Clicker Demo
@@ -82,16 +102,34 @@ You can customize the clock and digits by modifying the following files:
 - `src/app/components/Containter/Digit.tsx` - 7-segment digit component
 - `src/app/components/Containter/style/Digit.module.css` - Styling for digit component
 - `src/app/components/Containter/ClockButton.tsx` - Interactive button component
+- `src/app/components/Containter/Calender.tsx` - Calendar component
 - `src/app/components/Hexagon/Hexagon.tsx` - Individual segments
+
+### Color Themes
+
+The clock uses a set of predefined color themes that can be customized:
+
+```jsx
+const colorOptions = [
+  "#ff0000", // Red
+  "#00ff00", // Green
+  "#00ffff", // Cyan
+  "#ff9900", // Amber
+  "#ff00ff", // Magenta
+];
+```
+
+You can modify these colors in `Clock.tsx` and `page.tsx` to create your own theme options.
 
 ## Styling
 
 This project uses CSS Modules for component-specific styling:
 
 - Each component has its own `.module.css` file for scoped styling
-- The clock components feature glow effects using CSS shadows
+- The clock components feature glow effects using CSS shadows and text shadows
 - Interactive elements have hover effects that match the digital retro theme
-- Responsive design is implemented using media queries
+- Responsive design is implemented using media queries for various screen sizes
+- Transition animations improve user experience during format switching
 
 ## Technologies
 
@@ -101,6 +139,8 @@ This project uses:
 - TypeScript - Type-safe JavaScript
 - CSS Modules - Component styling
 - React Hooks - State management
+- useMemo & useCallback - Performance optimization
+- useRef - DOM references and interval management
 
 ## Screenshots
 
