@@ -22,21 +22,37 @@ export default function Home() {
   };
   return (
     <div className={styles.page}>
-      <div className={styles.page_child}>
-        <div className={styles.clock_clicker_container}>
-          <div className={styles.clock_container}>
-            <Clock
-              initialColor={"#ff0000"}
-              showSeconds={true}
-              showDate={true}
-            />
-          </div>
-          <div className={styles.clicker_container}>
-            <Clicker />
-          </div>
+      <div className={styles.clock_clicker_container}>
+        <div className={styles.clock_container}>
+          <Clock initialColor={"#ff0000"} showSeconds={true} showDate={true} />
         </div>
-        <div className={styles.digit_container}>
-          <div style={{ border: `2px solid ${currentColor}` }}>
+        <div
+          className={styles.clicker_container}
+          style={{ marginBottom: "10px" }}
+        >
+          <Clicker />
+        </div>
+        <div
+          className={styles.array_container}
+          style={{
+            border: `2px solid ${currentColor}`,
+            padding: "10px",
+            borderRadius: "10px",
+          }}
+        >
+          <h1
+            style={{
+              color: currentColor,
+              textShadow: `0 0 5px ${currentColor}`,
+            }}
+          >
+            Range 0-9
+          </h1>
+          <div
+            style={{
+              justifyContent: "center",
+            }}
+          >
             {Array.from({ length: 10 }, (_, i) => (
               <Digit key={i} value={i} color={currentColor} />
             ))}

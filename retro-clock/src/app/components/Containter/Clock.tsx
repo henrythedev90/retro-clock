@@ -342,7 +342,10 @@ const Clock: React.FC<ClockProps> = ({
   }, []);
 
   return (
-    <div className={classes.clock_wrapper}>
+    <div
+      className={classes.clock_wrapper}
+      style={{ border: `2px solid ${currentColor}`, marginBottom: "10px" }}
+    >
       <div className={classes.date_display}>
         <h1 style={{ color: currentColor }}>digital_retro_clock</h1>
         <Link href={"https://www.henry-nunez.com"}>

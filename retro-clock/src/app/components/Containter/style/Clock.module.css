@@ -16,6 +16,7 @@
   padding: 2rem;
   background-color: #000;
   width: 100%;
+  border-radius: 1rem;
 }
 
 /* Responsive clock wrapper */
@@ -38,6 +39,7 @@
   .clock_wrapper {
     padding: 10px 5px;
     gap: 8px;
+    margin-bottom: 10px;
   }
 }
 
@@ -45,7 +47,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 2rem;
+  padding: 20px;
   border-radius: 1rem;
   margin: 1rem 0;
   position: relative; /* For absolute positioning of AM/PM */
@@ -61,7 +63,7 @@
   flex-wrap: wrap; /* Prevent wrapping which could cause layout shifts */
   width: 100%;
   position: relative;
-  padding: 3rem;
+  padding: 4px;
 }
 
 .ampm_container {
