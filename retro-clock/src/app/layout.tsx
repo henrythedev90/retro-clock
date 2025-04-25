@@ -32,7 +32,7 @@ export default function RootLayout({
       </head>
       <body className={geistSans.className}>
         <div className={styles.page}>
-          <div className={styles.content_container}>{children}</div>
+          {children}
           <Footer />
         </div>
       </body>
